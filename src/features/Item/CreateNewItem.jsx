@@ -27,7 +27,7 @@ function CreateNewItem({ setItemList }) {
     };
     console.log(newItem);
 
-    setItemList((prevItems) => [...prevItems, newItem]);
+    addNewItem(newItem);
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -48,7 +48,7 @@ function CreateNewItem({ setItemList }) {
 
       {errors.exampleRequired && <span>This field is required</span>}
 
-      <button>AddItem</button>
+      <button type="submit">AddItem</button>
     </form>
   );
 }
