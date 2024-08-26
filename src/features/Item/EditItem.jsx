@@ -1,26 +1,15 @@
-/* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
 
-function CreateNewItem({ setItemList }) {
+// eslint-disable-next-line react/prop-types, no-unused-vars
+function EditItem({ itemId }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  function onSubmit(data) {
-    const ranNum = Math.floor(Math.random() * 1000);
-    const random = ranNum + "";
-
-    const newItem = {
-      id: random,
-      itemName: data.itemName,
-      unitPrice: data.unitPrice,
-      type: data.type,
-    };
-    console.log(newItem);
-
-    setItemList((prevItems) => [...prevItems, newItem]);
+  function onSubmit(update) {
+    console.log(update);
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -46,4 +35,4 @@ function CreateNewItem({ setItemList }) {
   );
 }
 
-export default CreateNewItem;
+export default EditItem;
