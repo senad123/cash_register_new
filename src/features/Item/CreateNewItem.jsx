@@ -1,7 +1,14 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
+import useItemStore from "../../globalState/itemStore";
 
 function CreateNewItem({ setItemList }) {
+  const items = useItemStore((state) => state.items);
+  const addNewItem = useItemStore((state) => state.addNewItem);
+  const updateItem = useItemStore((state) => state.updateItem);
+
+  console.log(items);
   const {
     register,
     handleSubmit,

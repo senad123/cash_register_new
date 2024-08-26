@@ -8,9 +8,9 @@ function Item({ item, onDelete }) {
     <>
       <li>
         {item.id} {item.itemName} {item.unitPrice} {item.type}{" "}
-        <button onClick={() => setShow(!show)}>edit</button>
+        <button onClick={() => setShow(!show)}>✏️</button>
         {show && <EditItem itemId={item.id} />}
-        <button onClick={() => onDelete(item.id)}>delete</button>
+        <button onClick={() => onDelete(item.id)}>❌</button>
       </li>
     </>
   );

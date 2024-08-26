@@ -11,7 +11,6 @@ function ListAllItems() {
     { id: 5, itemName: "Espresso", unitPrice: 4, type: "drink" },
   ];
   const savedItemList = localStorage.getItem("itemList");
-  console.log(savedItemList);
 
   const [itemList, setItemList] = useState(() =>
     savedItemList ? JSON.parse(savedItemList) : initialItems,
