@@ -21,6 +21,7 @@ function CreateNewOrder() {
     setValue,
     resetField,
     watch,
+    reset,
   } = useForm({
     defaultValues: {
       orderItems: [],
@@ -32,7 +33,7 @@ function CreateNewOrder() {
     name: "orderItems",
   });
 
-  const addedItems = fields.map((field) => field.id);
+  const addedItems = fields.map((field) => field.itemName);
 
   const [editIndex, setEditIndex] = useState(null); // Track which item is being edited
 
@@ -47,8 +48,9 @@ function CreateNewOrder() {
   }, [totalPrice, totalPDV, tip, setValue]);
 
   function onSubmit(data) {
-    console.log(data);
     createNewOrder(data);
+
+    console.log(data);
   }
 
   function handleAddItem() {
@@ -100,7 +102,15 @@ function CreateNewOrder() {
 
   const selectedItem = getValues("selectedItem");
   const isItemAddedToList = fields.length > 0;
-  console.log(isItemAddedToList);
+  if (selectedItem) {
+    var obj = JSON.parse(selectedItem);
+  }
+  const check = obj?.itemName == addedItems;
+
+  console.log("selectedItem ", obj?.itemName);
+
+  console.log("addedItem ", addedItems);
+  console.log(check);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -173,7 +183,7 @@ function CreateNewOrder() {
             />
             <button type="button">+</button>
 
-            <button type="button" onClick={handleAddItem}>
+            <button disabled={check} type="button" onClick={handleAddItem}>
               Add Item
             </button>
           </div>
