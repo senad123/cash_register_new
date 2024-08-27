@@ -1,4 +1,4 @@
-import ListAllItems from "../features/Item/ListAllItems";
+import ListAllItems from "../features/items/ListAllItems";
 
 function AllItems() {
   return <ListAllItems />;

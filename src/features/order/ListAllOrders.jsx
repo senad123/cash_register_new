@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+import useOrderStore from "../../globalState/orderStore";
+
 const initiaOrders = [
   {
     orderId: 1,
@@ -42,6 +46,8 @@ const initiaOrders = [
 ];
 
 function ListAllOrders() {
+  const deleteOrder = useOrderStore((state) => state.deleteOrder);
+
   return <div>{initiaOrders.map((order) => order.customerInfo)}</div>;
 }
 

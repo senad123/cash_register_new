@@ -1,4 +1,4 @@
-import CreateNewOrder from "../features/cart/CreateNewOrder";
+import CreateNewOrder from "../features/order/CreateNewOrder";
 
 function CreateOrder() {
   return <CreateNewOrder />;

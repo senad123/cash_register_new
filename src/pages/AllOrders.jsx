@@ -1,4 +1,4 @@
-import ListAllOrders from "../features/cart/ListAllOrders";
+import ListAllOrders from "../features/order/ListAllOrders";
 
 function AllOrders() {
   return (
