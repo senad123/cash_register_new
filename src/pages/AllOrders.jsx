@@ -1,9 +1,12 @@
-import ListAllOrders from "../features/order/ListAllOrders";
+import { Outlet } from "react-router-dom";
+import OrderLaout from "../ui/OrderLaout";
 
 function AllOrders() {
   return (
     <div>
-      <ListAllOrders />
+      <OrderLaout>
+        <Outlet />
+      </OrderLaout>
     </div>
   );
 }

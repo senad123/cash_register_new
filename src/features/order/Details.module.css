@@ -1,0 +1,105 @@
+/* Styles for Web UI */
+.main {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.customerInfo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.invoiceHeader {
+  font-size: 16px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.totalPrice {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+
+/* PDF Styles */
+
+.pdfPage {
+  padding: 40px;
+  font-size: 12px;
+  font-family: Helvetica;
+}
+
+.pdfHeader {
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.pdfSection {
+  margin-bottom: 20px;
+}
+
+.pdfCustomerInfo {
+  margin-bottom: 10px;
+}
+
+.pdfTable {
+  display: table;
+  width: auto;
+  border-style: solid;
+  border-width: 1px;
+  margin-bottom: 10px;
+}
+
+.pdfTableRow {
+  flex-direction: row;
+  border-bottom: 1px solid #eee;
+}
+
+.pdfTableHeader {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.pdfTableCell {
+  padding: 8px;
+  flex-grow: 1;
+}
+
+.pdfTotals {
+  margin-top: 10px;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.pdfTotalsLabel {
+  font-weight: bold;
+}
+
+.pdfFooter {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 10px;
+  color: gray;
+}

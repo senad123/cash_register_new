@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css?family=Muli&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Quicksand&display=swap");
+
+html,
+body,
+#root {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #333333;
+  background-color: #f9f9f9;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --color-brand--1: #ffb545;
+  --color-brand--2: #00c46a;
+  --color-dark--0: #242a2e;
+  --color-dark--1: #2d3439;
+  --color-dark--2: #42484d;
+  --color-light--1: #aaa;
+  --color-light--2: #ececec;
+  --color-light--3: #d6dee0;
+
+  --color-header-footer-nav: #004b49;
+  --color-mainlayout: #f9f9f9;
+  --color-font: #ffffff;
+  --color-font1: #333333;
+
+  --color-detail-prescription: #f0f4f8;
+}
+
+.h1 {
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 20px;
+
+  color: rgba(0, 0, 0, 0.8);
+}

@@ -11,6 +11,7 @@ import OrderDetail from "./pages/OrderDetail";
 import HomePage from "./pages/HomePage";
 import PageNotFound from "./pages/PageNotFound";
 import About from "./pages/About";
+import OrderLaout from "./ui/OrderLaout";
 
 function App() {
   const customers = useCustomerStore((state) => state.customers);
@@ -26,8 +27,11 @@ function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="createNewOrder" element={<CreateOrder />} />
-            <Route path="allOrders" element={<AllOrders />} />
-            <Route path="orderDetail/:id" element={<OrderDetail />} />
+            <Route element={<OrderLaout />}>
+              <Route path="allOrders" element={<AllOrders />} />
+              <Route path="orderDetail/:orderId" element={<OrderDetail />} />
+            </Route>
+
             <Route path="allItems" element={<AllItems />} />
             <Route path="about" element={<About />} />
           </Route>

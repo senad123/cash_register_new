@@ -1,54 +1,66 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
+import { useState } from "react";
 import useOrderStore from "../../globalState/orderStore";
-
-const initiaOrders = [
-  {
-    orderId: 1,
-    customerInfo: "Superman",
-    selecteedItems: [
-      {
-        itemId: 1,
-        itemName: "Banana",
-        unitPrice: 2,
-        quantity: 2,
-      },
-      {
-        itemId: 2,
-        itemName: "Apple",
-        unitPrice: 5,
-        quantity: 3,
-      },
-    ],
-    totalPrice: 10,
-    totalPDV: 1,
-  },
-  {
-    orderId: 2,
-    customerInfo: "Batman",
-    selecteedItems: [
-      {
-        itemId: 4,
-        itemName: "Espresso",
-        unitPrice: 2,
-        quantity: 3,
-      },
-      {
-        itemId: 3,
-        itemName: "Orange",
-        unitPrice: 6,
-        quantity: 3,
-      },
-    ],
-    totalPrice: 10,
-    totalPDV: 1,
-  },
-];
+import CreateNewOrder from "./CreateNewOrder";
+import styles from "./ListAllOrders.module.css";
+import Order from "./Order";
 
 function ListAllOrders() {
-  const deleteOrder = useOrderStore((state) => state.deleteOrder);
+  const listOfAllOrders = useOrderStore((state) => state.orders);
+  const [editingOrderId, setEditingOrderId] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null); // Track selected order
 
-  return <div>{initiaOrders.map((order) => order.customerInfo)}</div>;
+  const stopEditing = () => {
+    setEditingOrderId(null);
+  };
+
+  console.log(listOfAllOrders);
+
+  const orderToEdit = listOfAllOrders.find(
+    (order) => order?.orderId === editingOrderId,
+  );
+
+  // Toggle the selection state of an order and close the edit form if another order is selected
+  const handleSelectOrder = (orderId) => {
+    if (selectedOrderId === orderId) {
+      setSelectedOrderId(null); // Deselect if already selected
+      setEditingOrderId(null); // Close edit form
+    } else {
+      setSelectedOrderId(orderId); // Select new order
+      setEditingOrderId(null); // Close any open edit form
+    }
+  };
+
+  return (
+    <div>
+      <div className={styles.grid}>
+        <div className={styles.grid_header}>Order Info</div>
+        <div className={styles.grid_header}>Date</div>
+        <div className={styles.grid_header}>Edit</div>
+        <div className={styles.grid_header}>Delete</div>
+      </div>
+
+      {listOfAllOrders.map((order) => (
+        <Order
+          key={order.orderId}
+          order={order}
+          setEditingOrderId={setEditingOrderId}
+          handleSelectOrder={handleSelectOrder}
+          selectedOrderId={selectedOrderId} // Pass selectedOrderId
+        />
+      ))}
+
+      {editingOrderId && orderToEdit && (
+        <div>
+          <h2>Edit Order {orderToEdit.orderId}</h2>
+          <CreateNewOrder
+            orderToEdit={orderToEdit}
+            onFormSubmit={stopEditing}
+          />
+          <button onClick={stopEditing}>Cancel</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default ListAllOrders;
