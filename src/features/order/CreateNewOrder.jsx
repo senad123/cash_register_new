@@ -1,182 +1,136 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import useOrderStore from "../../globalState/orderStore";
 import useItemStore from "../../globalState/itemStore";
-import { useFieldArray, useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
 import GenerateOrderId from "../helper/GenerateOrderId";
+import UpdateQuantity from "./UpdateQuantity";
+//import Button from "../../ui/Button";
 
 function CreateNewOrder({ orderToEdit, onFormSubmit }) {
   const createNewOrder = useOrderStore((state) => state.createNewOrder);
   const updateOrder = useOrderStore((state) => state.updateOrder);
   const items = useItemStore((state) => state.items);
 
-  const incrementQuantity = useOrderStore((state) => state.incrementQuantity);
-  const decrementQuantity = useOrderStore((state) => state.decrementQuantity);
-  const orders = useOrderStore((state) => state.orders);
+  const getCurrentQuantityById = useOrderStore(
+    (state) => state.getCurrentQuantityById,
+  );
 
-  const tip = useOrderStore((state) => state.tip); // Get tip from Zustand
-  const setTip = useOrderStore((state) => state.setTip); // Action to update tip in Zustand
+  console.log(getCurrentQuantityById);
+
+  const tip = useOrderStore((state) => state.tip);
+  const setTip = useOrderStore((state) => state.setTip);
 
   const [filteredItems, setFilteredItems] = useState(items);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showQuantityInput, setShowQuantityInput] = useState(true);
+  const [showQuantityInput, setShowQuantityInput] = useState(false);
 
-  const [startDate, setStartDate] = useState(new Date()); // Initialize startDate to current date
-  // format(startDate, "dd/MM/yyy");
+  const [startDate, setStartDate] = useState(new Date());
+  const [orderItems, setOrderItems] = useState(orderToEdit?.orderItems || []);
+  const [customerInfo, setCustomerInfo] = useState(
+    orderToEdit?.customerInfo || "",
+  );
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    getValues,
-    setValue,
-    resetField,
-    reset,
-    watch,
-  } = useForm({
-    defaultValues: {
-      orderItems: [],
-      customerInfo: "",
-      tip, // Initialize with the Zustand tip value
-      ...orderToEdit, // Spread order data if editing
-    },
-  });
-
-  const customerInfo = watch("customerInfo");
-
-  const { fields, append, remove, update } = useFieldArray({
-    control,
-    name: "orderItems",
-  });
-
-  const addedItems = fields.map((field) => field.itemName);
-
-  const [editIndex, setEditIndex] = useState(null); // Track which item is being edited
-
-  const totalPrice = fields.reduce((total, field) => {
-    return total + field.quantity * field.unitPrice;
-  }, 0);
-
+  const totalPrice = orderItems.reduce(
+    (total, item) => total + item.quantity * item.unitPrice,
+    0,
+  );
   const totalPDV = totalPrice * 0.19;
 
-  // Function to find the current item based on Zustand state and item ID
   useEffect(() => {
     if (orderToEdit) {
-      const selectedItemId = JSON.parse(getValues("selectedItem")).id;
-      const order = orders.find((o) => o.orderId === orderToEdit.orderId);
-      if (order) {
-        const item = order.orderItems.find((i) => i.id === selectedItemId);
-        if (item) setCurrentOrderItem(item); // Bind the item to local state
-      }
+      setOrderItems(orderToEdit.orderItems || []);
+      setCustomerInfo(orderToEdit.customerInfo || "");
+      setTip(orderToEdit.tip || 0);
+      setStartDate(new Date(orderToEdit.startDate || new Date()));
     }
-  }, [getValues, orderToEdit, orders]);
+  }, [orderToEdit, setTip]);
 
-  useEffect(() => {
-    setValue("totalPrice", totalPrice + totalPDV + Number(tip));
-  }, [totalPrice, totalPDV, tip, setValue]);
-
-  useEffect(() => {
-    if (orderToEdit) {
-      setValue("orderItems", orderToEdit.orderItems || []);
-      setValue("customerInfo", orderToEdit.customerInfo || "");
-      setValue("tip", orderToEdit.tip || 0);
-      setTip(orderToEdit.tip || 0); // Update the Zustand tip state
-      setStartDate(new Date(orderToEdit.startDate || new Date())); // Initialize startDate with the order date if editing
-    }
-  }, [orderToEdit, setValue, setTip]);
-
-  function onSubmit(data) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const orderData = {
-      ...data,
-      startDate, // Add the selected startDate to the submitted order data
+      customerInfo,
+      orderItems,
+      startDate,
+      tip,
+      totalPrice: totalPrice + totalPDV + Number(tip),
     };
 
     if (orderToEdit) {
       updateOrder({ ...orderToEdit, ...orderData });
     } else {
       const orderId = GenerateOrderId();
-      setValue("orderId", orderId);
-      orderData.orderId = orderId;
-      createNewOrder(orderData);
+      createNewOrder({ ...orderData, orderId });
     }
 
-    reset(); // Reset form fields
-    setStartDate(new Date()); // Reset startDate to the current date
-
+    resetForm();
     if (onFormSubmit) {
       onFormSubmit();
     }
-  }
+  };
 
-  function handleAddItem() {
-    const selectedItem = JSON.parse(getValues("selectedItem"));
-    append({ ...selectedItem, quantity: getValues().selectedQuantity });
-    setShowQuantityInput(false);
-    resetField("search");
-    resetField("selectedItem");
-  }
+  const resetForm = () => {
+    setCustomerInfo("");
+    setOrderItems([]);
+    setTip(0);
+    setStartDate(new Date());
+    setSearchTerm("");
+    setSelectedItem(null);
+  };
 
-  function handleQuantityChange(index, value) {
-    setValue(`orderItems.${index}.quantity`, value);
-    update(index, { ...fields[index], quantity: value });
-  }
+  const handleAddItem = () => {
+    if (selectedItem) {
+      setOrderItems([
+        ...orderItems,
+        { ...selectedItem, quantity: selectedQuantity },
+      ]);
+      setSelectedItem(null); // Clear selected item after adding
+      setSearchTerm(""); // Clear search input
+      setSelectedQuantity(1);
+      setShowQuantityInput(false);
+    }
+  };
 
-  function handleSearch(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    setSearchTerm(searchTerm);
+  const handleSearch = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    setSearchTerm(searchValue);
     const filtered = items.filter(
       (item) =>
-        item.itemName.toLowerCase().includes(searchTerm) &&
-        !addedItems.includes(item.id),
+        item.itemName.toLowerCase().includes(searchValue) &&
+        !orderItems.some((orderItem) => orderItem.id === item.id),
     );
     setFilteredItems(filtered);
-  }
+  };
 
-  function handleSelectItem(item) {
-    if (addedItems.includes(item.id)) {
-      return;
-    }
-    setValue("search", item.itemName);
-    setValue("selectedItem", JSON.stringify(item));
-    setSearchTerm("");
-    setFilteredItems([]);
+  const handleSelectItem = (item) => {
+    setSelectedItem(item);
+    setSearchTerm(""); // Clear search input after selection
     setShowQuantityInput(true);
-  }
+  };
 
-  function handleEdit(index) {
-    setEditIndex(index); // Set the index of the item being edited
-  }
-  function handleUpdate(index) {
-    setEditIndex(null); // Revert back to display mode
-  }
-  function handleTipChange(e) {
-    const newTip = e.target.value;
-    setTip(newTip); // Update the tip in Zustand
-    setValue("tip", newTip); // Update the form value
-  }
+  const handleQuantityChange = (index, value) => {
+    const updatedItems = [...orderItems];
+    updatedItems[index].quantity = value;
+    setOrderItems(updatedItems);
+  };
 
-  const selectedItem = getValues("selectedItem");
-
-  if (selectedItem) {
-    var obj = JSON.parse(selectedItem);
-  }
-  const isItemAddedToList = obj?.itemName == addedItems;
+  const handleRemoveItem = (index) => {
+    const updatedItems = [...orderItems];
+    updatedItems.splice(index, 1);
+    setOrderItems(updatedItems);
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit}>
       <div>
         <label>Customer Info: </label>
         <input
           placeholder="Customer"
-          id="customerInfo"
           value={customerInfo}
-          onChange={(e) => setValue("customerInfo", e.target.value)}
-          {...register("customerInfo")}
+          onChange={(e) => setCustomerInfo(e.target.value)}
         />
       </div>
 
@@ -185,8 +139,7 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
         <DatePicker
           dateFormat="dd/MM/yyyy"
           selected={startDate}
-          onChange={(date) => setStartDate(date)} // Update startDate on date change
-          // Change to Date/Month/Year format
+          onChange={(date) => setStartDate(date)}
         />
       </div>
 
@@ -195,8 +148,7 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
 
         <input
           placeholder="search"
-          id="search"
-          {...register("search")}
+          value={searchTerm}
           onChange={handleSearch}
         />
 
@@ -207,9 +159,6 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
               maxHeight: "150px",
               maxWidth: "500px",
               overflowY: "auto",
-              padding: "0",
-              margin: "0",
-              listStyle: "none",
             }}
           >
             {filteredItems.map((item) => (
@@ -218,96 +167,71 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
                 onClick={() => handleSelectItem(item)}
                 style={{
                   padding: "8px",
-                  cursor: addedItems.includes(item.id)
-                    ? "not-allowed"
-                    : "pointer",
-                  backgroundColor: addedItems.includes(item.id)
+                  cursor: "pointer",
+                  backgroundColor: orderItems.some(
+                    (orderItem) => orderItem.id === item.id,
+                  )
                     ? "#e0e0e0"
                     : "#fff",
                   borderBottom: "1px solid #ccc",
                 }}
               >
-                <div
-                  style={{
-                    color: addedItems.includes(item.id) ? "gray" : "black",
-                  }}
-                >
-                  {item.itemName} - {item.unitPrice} €
-                </div>
+                {item.itemName} - {item.unitPrice} €
               </div>
             ))}
           </div>
         )}
 
-        <input type="hidden" id="selectedItem" {...register("selectedItem")} />
-
-        {selectedItem && showQuantityInput && (
-          <div>
-            <button
-              type="button"
-              onClick={() => decrementQuantity(orderToEdit?.orderId, obj?.id)}
-            >
-              -
-            </button>
-            <input
-              type="number"
-              id="selectedQuantity"
-              defaultValue={1}
-              min={1}
-              {...register("selectedQuantity", { valueAsNumber: true })}
-              placeholder="quantity"
+        {showQuantityInput && selectedItem && (
+          <div
+            style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
+          >
+            <div style={{ marginRight: "10px" }}>
+              {selectedItem.itemName} - {selectedItem.unitPrice}€
+            </div>
+            <UpdateQuantity
+              orderToEdit={orderToEdit}
+              selectedItem={selectedItem}
+              setSelectedQuantity={setSelectedQuantity}
+              selectedQuantity={selectedQuantity}
             />
+            <button type="button" onClick={() => setSelectedItem("")}>
+              Cancel
+            </button>
             <button
               type="button"
-              onClick={() => incrementQuantity(orderToEdit?.orderId, obj.id)}
+              onClick={handleAddItem} // Add item to the order
+              style={{ marginRight: "10px" }}
             >
-              +
+              Add Item
             </button>
           </div>
         )}
-        <button
-          disabled={isItemAddedToList}
-          type="button"
-          onClick={handleAddItem}
-        >
-          Add Item
-        </button>
       </div>
+
       <div>
         <p>Selected Items</p>
-        {fields.map((field, index) => (
-          <div key={field.id}>
+        {orderItems.map((item, index) => (
+          <div key={item.id}>
             <p>
-              {field.itemName || "no name"} -
-              {editIndex === index ? (
-                <span>
-                  <input
-                    type="number"
-                    {...register(`orderItems.${index}.quantity`)}
-                    value={field.quantity || 1}
-                    onChange={(e) =>
-                      handleQuantityChange(index, e.target.value)
-                    }
-                  />
-                  <button type="button" onClick={() => handleUpdate(index)}>
-                    Update
-                  </button>
-                </span>
-              ) : (
-                <span>{field.quantity}</span>
-              )}{" "}
-              - {field.unitPrice}€ - {field.quantity * field.unitPrice}€
+              {item.itemName} -
+              <input
+                type="number"
+                min={1}
+                value={item.quantity}
+                onChange={(e) =>
+                  handleQuantityChange(index, Number(e.target.value))
+                }
+              />
+              - {item.unitPrice}€ - {item.quantity * item.unitPrice}€
+              <button type="button" onClick={() => handleRemoveItem(index)}>
+                Remove
+              </button>
             </p>
-
-            <button type="button" onClick={() => handleEdit(index)}>
-              Edit
-            </button>
-            <button type="button" onClick={() => remove(index)}>
-              Remove
-            </button>
           </div>
         ))}
       </div>
+
       <div>
         <p>Total Price: {totalPrice.toFixed(2)}€</p>
         <p>Total PDV (19%): {totalPDV.toFixed(2)}€</p>
@@ -318,16 +242,16 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
         <div>
           <label>Tip:</label>
           <input
-            placeholder="Tip"
             type="number"
             value={tip}
-            onChange={handleTipChange}
+            onChange={(e) => setTip(Number(e.target.value))}
           />
           €
         </div>
       </div>
+
       <div>
-        <button disabled={isItemAddedToList} type="submit">
+        <button type="submit">
           {orderToEdit ? "Update Order" : "Save Order"}
         </button>
       </div>
