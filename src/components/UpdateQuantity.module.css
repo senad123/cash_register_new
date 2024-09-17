@@ -1,0 +1,30 @@
+/* File path: src/components/UpdateQuantity.module.css */
+
+.quantityContainer {
+  display: flex;
+  align-items: center;
+}
+
+.quantityButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 0 5px;
+}
+
+.quantityButton:hover {
+  background-color: #0056b3;
+}
+
+.quantityInput {
+  width: 50px;
+  text-align: center;
+  font-size: 1rem;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

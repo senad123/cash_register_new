@@ -1,0 +1,32 @@
+/* File path: src/components/SelectedItemsComponent.module.css */
+
+.selectedItems {
+  margin-top: 20px;
+  background-color: #fafafa;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.quantityInput {
+  width: 50px;
+  padding: 5px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.button:hover {
+  background-color: #c82333;
+}

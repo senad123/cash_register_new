@@ -1,0 +1,45 @@
+/* File path: src/components/OrderSummaryComponent.module.css */
+
+.totalPrice {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.totalPrice p {
+  font-size: 1.1rem;
+  margin: 8px 0;
+}
+
+input {
+  width: 100px;
+  padding: 5px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input[type="number"] {
+  width: 80px;
+  margin-left: 10px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

@@ -1,31 +1,28 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
+// File path: src/components/CreateNewOrder.js
 import { useEffect, useState } from "react";
 import useOrderStore from "../../globalState/orderStore";
 import useItemStore from "../../globalState/itemStore";
+import useSearchStore from "../../globalState/useSearchStore";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import GenerateOrderId from "../helper/GenerateOrderId";
-import UpdateQuantity from "./UpdateQuantity";
-//import Button from "../../ui/Button";
+import SearchComponent from "../../components/SearchComponent";
+import SelectedItemsComponent from "../../components/SelectedItemsComponent";
+import OrderSummaryComponent from "../../components/OrderSummaryComponent";
+import styles from "./CreateNewOrder.module.css";
 
 function CreateNewOrder({ orderToEdit, onFormSubmit }) {
   const createNewOrder = useOrderStore((state) => state.createNewOrder);
   const updateOrder = useOrderStore((state) => state.updateOrder);
-  const items = useItemStore((state) => state.items);
-
-  const getCurrentQuantityById = useOrderStore(
-    (state) => state.getCurrentQuantityById,
-  );
-
-  console.log(getCurrentQuantityById);
-
+  const items = useItemStore((state) => state.items); // List of items
   const tip = useOrderStore((state) => state.tip);
   const setTip = useOrderStore((state) => state.setTip);
 
-  const [filteredItems, setFilteredItems] = useState(items);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showQuantityInput, setShowQuantityInput] = useState(false);
+  const { initializeItems } = useSearchStore(); // Initialize the search store
 
+  const [showQuantityInput, setShowQuantityInput] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [orderItems, setOrderItems] = useState(orderToEdit?.orderItems || []);
   const [customerInfo, setCustomerInfo] = useState(
@@ -48,6 +45,11 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
       setStartDate(new Date(orderToEdit.startDate || new Date()));
     }
   }, [orderToEdit, setTip]);
+
+  // Initialize items in the search store when the component mounts
+  useEffect(() => {
+    initializeItems(items);
+  }, [items, initializeItems]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -77,7 +79,6 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
     setOrderItems([]);
     setTip(0);
     setStartDate(new Date());
-    setSearchTerm("");
     setSelectedItem(null);
   };
 
@@ -87,27 +88,14 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
         ...orderItems,
         { ...selectedItem, quantity: selectedQuantity },
       ]);
-      setSelectedItem(null); // Clear selected item after adding
-      setSearchTerm(""); // Clear search input
+      setSelectedItem(null);
       setSelectedQuantity(1);
       setShowQuantityInput(false);
     }
   };
 
-  const handleSearch = (e) => {
-    const searchValue = e.target.value.toLowerCase();
-    setSearchTerm(searchValue);
-    const filtered = items.filter(
-      (item) =>
-        item.itemName.toLowerCase().includes(searchValue) &&
-        !orderItems.some((orderItem) => orderItem.id === item.id),
-    );
-    setFilteredItems(filtered);
-  };
-
   const handleSelectItem = (item) => {
     setSelectedItem(item);
-    setSearchTerm(""); // Clear search input after selection
     setShowQuantityInput(true);
   };
 
@@ -125,135 +113,55 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label>Customer Info: </label>
-        <input
-          placeholder="Customer"
-          value={customerInfo}
-          onChange={(e) => setCustomerInfo(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <label>Date order:</label>
-        <DatePicker
-          dateFormat="dd/MM/yyyy"
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-        />
-      </div>
-
-      <div>
-        <h3>Add Article</h3>
-
-        <input
-          placeholder="search"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-
-        {searchTerm && filteredItems.length > 0 && (
-          <div
-            style={{
-              border: "1px solid #ccc",
-              maxHeight: "150px",
-              maxWidth: "500px",
-              overflowY: "auto",
-            }}
-          >
-            {filteredItems.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => handleSelectItem(item)}
-                style={{
-                  padding: "8px",
-                  cursor: "pointer",
-                  backgroundColor: orderItems.some(
-                    (orderItem) => orderItem.id === item.id,
-                  )
-                    ? "#e0e0e0"
-                    : "#fff",
-                  borderBottom: "1px solid #ccc",
-                }}
-              >
-                {item.itemName} - {item.unitPrice} €
-              </div>
-            ))}
-          </div>
-        )}
-
-        {showQuantityInput && selectedItem && (
-          <div
-            style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
-          >
-            <div style={{ marginRight: "10px" }}>
-              {selectedItem.itemName} - {selectedItem.unitPrice}€
-            </div>
-            <UpdateQuantity
-              orderToEdit={orderToEdit}
-              selectedItem={selectedItem}
-              setSelectedQuantity={setSelectedQuantity}
-              selectedQuantity={selectedQuantity}
-            />
-            <button type="button" onClick={() => setSelectedItem("")}>
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleAddItem} // Add item to the order
-              style={{ marginRight: "10px" }}
-            >
-              Add Item
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div>
-        <p>Selected Items</p>
-        {orderItems.map((item, index) => (
-          <div key={item.id}>
-            <p>
-              {item.itemName} -
-              <input
-                type="number"
-                min={1}
-                value={item.quantity}
-                onChange={(e) =>
-                  handleQuantityChange(index, Number(e.target.value))
-                }
-              />
-              - {item.unitPrice}€ - {item.quantity * item.unitPrice}€
-              <button type="button" onClick={() => handleRemoveItem(index)}>
-                Remove
-              </button>
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div>
-        <p>Total Price: {totalPrice.toFixed(2)}€</p>
-        <p>Total PDV (19%): {totalPDV.toFixed(2)}€</p>
-        <p>
-          Total with PDV and Tip:{" "}
-          {(totalPrice + totalPDV + Number(tip)).toFixed(2)}€
-        </p>
-        <div>
-          <label>Tip:</label>
-          <input
-            type="number"
-            value={tip}
-            onChange={(e) => setTip(Number(e.target.value))}
+      <div className={styles.container}>
+        <div className={styles.leftSection}>
+          <SearchComponent
+            items={items}
+            orderItems={orderItems}
+            handleSelectItem={handleSelectItem}
+            handleAddItem={handleAddItem}
+            showQuantityInput={showQuantityInput}
+            selectedItem={selectedItem}
+            setSelectedItem={setSelectedItem}
+            setShowQuantityInput={setShowQuantityInput}
+            selectedQuantity={selectedQuantity}
+            setSelectedQuantity={setSelectedQuantity}
           />
-          €
         </div>
-      </div>
-
-      <div>
-        <button type="submit">
-          {orderToEdit ? "Update Order" : "Save Order"}
-        </button>
+        <div className={styles.rightSection}>
+          <div>
+            <label>Customer Info: </label>
+            <input
+              placeholder="Customer"
+              value={customerInfo}
+              onChange={(e) => setCustomerInfo(e.target.value)}
+            />
+          </div>
+          <div>
+            <label>Date order:</label>
+            <DatePicker
+              dateFormat="dd/MM/yyyy"
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+            />
+          </div>
+          <SelectedItemsComponent
+            orderItems={orderItems}
+            handleQuantityChange={handleQuantityChange}
+            handleRemoveItem={handleRemoveItem}
+          />
+          <OrderSummaryComponent
+            totalPrice={totalPrice}
+            totalPDV={totalPDV}
+            tip={tip}
+            setTip={setTip}
+          />
+          <div>
+            <button type="submit" className={styles.button}>
+              {orderToEdit ? "Update Order" : "Save Order"}
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   );

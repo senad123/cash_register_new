@@ -9,6 +9,6 @@ export default function GenerateOrderId() {
   //const timestamp = Date.now().toString();
   console.log("time", timeStamp);
 
-  const randomNum = Math.floor(Math.random() * 10).toString();
+  const randomNum = Math.floor(Math.random() * 1000).toString();
   return `ORDER-${timeStamp}-${randomNum}`;
 }

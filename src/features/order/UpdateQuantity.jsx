@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { useEffect } from "react";
 import useOrderStore from "../../globalState/orderStore";
 
 function UpdateQuantity({
@@ -9,6 +10,20 @@ function UpdateQuantity({
 }) {
   const incrementQuantity = useOrderStore((state) => state.incrementQuantity);
   const decrementQuantity = useOrderStore((state) => state.decrementQuantity);
+  const getCurrentQuantityById = useOrderStore(
+    (state) => state.getCurrentQuantityById,
+  );
+
+  // Fetch the current quantity from Zustand on component mount or when selectedItem changes
+  useEffect(() => {
+    if (orderToEdit && selectedItem) {
+      const currentQuantity = getCurrentQuantityById(
+        orderToEdit.orderId,
+        selectedItem.id,
+      );
+      setSelectedQuantity(currentQuantity);
+    }
+  }, [orderToEdit, selectedItem, getCurrentQuantityById, setSelectedQuantity]);
 
   return (
     <div>
