@@ -6,25 +6,29 @@ import CreateNewItem from "./CreateNewItem";
 import useItemStore from "../../globalState/itemStore";
 
 function ListAllItems() {
-  //zustand
+  // Zustand store to get the list of items
   const items = useItemStore((state) => state.items);
 
-  //ShowEdit
+  // State to control the visibility of the 'Add New Item' form
   const [show, setShow] = useState(false);
+
   function handleShow() {
-    setShow((show) => !show);
+    setShow((show) => !show); // Toggle form visibility
   }
 
   return (
     <div>
-      list of all available itemsdd
+      <h2>List of All Available Items</h2>
       <ul>
         {items.map((item) => (
           <Item item={item} key={item.id} />
         ))}
       </ul>
-      {show && <CreateNewItem />}
-      <button onClick={handleShow}>{!show ? "AddNewItem" : "Close"}</button>
+
+      {/* Show CreateNewItem form if 'show' is true */}
+      {show && <CreateNewItem setShow={setShow} />}
+
+      <button onClick={handleShow}>{!show ? "Add New Item" : "Close"}</button>
     </div>
   );
 }

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import EditItem from "./EditItem";
+import CreateNewItem from "./CreateNewItem";
 import useItemStore from "../../globalState/itemStore";
 
 /* eslint-disable react/prop-types */
 function Item({ item }) {
   const removeItem = useItemStore((state) => state.removeItem);
+  const [show, setShow] = useState(false); // Manage form visibility
 
-  const [show, setShow] = useState(false);
   const handleDelete = () => {
     setShow(false);
     removeItem(item.id);
@@ -15,9 +15,14 @@ function Item({ item }) {
   return (
     <>
       <li>
-        {item.id} {item.itemName} {item.unitPrice} {item.type}{" "}
+        {item.id} - {item.itemName} {item.unitPrice}€ - {item.type}{" "}
         <button onClick={() => setShow(!show)}>✏️</button>
-        {show && <EditItem itemId={item.id} />}
+        {show && (
+          <CreateNewItem
+            item={item} // Pass the item to be edited
+            setShow={setShow} // Control form visibility
+          />
+        )}
         <button onClick={handleDelete}>❌</button>
       </li>
     </>

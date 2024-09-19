@@ -2,28 +2,41 @@
 /* eslint-disable react/prop-types */
 // File path: src/components/CreateNewOrder.js
 import { useEffect, useState } from "react";
+
 import useOrderStore from "../../globalState/orderStore";
 import useItemStore from "../../globalState/itemStore";
-import useSearchStore from "../../globalState/useSearchStore";
+import useSearchStore from "../../globalState/searchStore";
+
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
 import GenerateOrderId from "../helper/GenerateOrderId";
 import SearchComponent from "../../components/SearchComponent";
 import SelectedItemsComponent from "../../components/SelectedItemsComponent";
 import OrderSummaryComponent from "../../components/OrderSummaryComponent";
+
 import styles from "./CreateNewOrder.module.css";
 
 function CreateNewOrder({ orderToEdit, onFormSubmit }) {
   const createNewOrder = useOrderStore((state) => state.createNewOrder);
   const updateOrder = useOrderStore((state) => state.updateOrder);
-  const items = useItemStore((state) => state.items); // List of items
   const tip = useOrderStore((state) => state.tip);
   const setTip = useOrderStore((state) => state.setTip);
 
-  const { initializeItems } = useSearchStore(); // Initialize the search store
+  //OrderStore
+  // const orderItems = useOrderStore((state) => state.orderItems); // Global order items
+  // const setOrderItems = useOrderStore((state) => state.setOrderItems); // Action to update items
+
+  //ItemStore
+  const items = useItemStore((state) => state.items); // List of items
+
+  //SEARCH STORE
+  const initializeItems = useSearchStore((state) => state.initializeItems);
+  // const { initializeItems } = useSearchStore(); // Initialize the search store
 
   const [showQuantityInput, setShowQuantityInput] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
+
   const [orderItems, setOrderItems] = useState(orderToEdit?.orderItems || []);
   const [customerInfo, setCustomerInfo] = useState(
     orderToEdit?.customerInfo || "",
@@ -44,7 +57,7 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
       setTip(orderToEdit.tip || 0);
       setStartDate(new Date(orderToEdit.startDate || new Date()));
     }
-  }, [orderToEdit, setTip]);
+  }, [orderToEdit, setTip, setOrderItems]);
 
   // Initialize items in the search store when the component mounts
   useEffect(() => {
@@ -91,6 +104,7 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
       setSelectedItem(null);
       setSelectedQuantity(1);
       setShowQuantityInput(false);
+      initializeItems;
     }
   };
 
@@ -150,6 +164,11 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
             handleQuantityChange={handleQuantityChange}
             handleRemoveItem={handleRemoveItem}
           />
+          {/* <SelectedItemsComponent
+            orderItems={orderItems}
+            setOrderItems={setOrderItems}
+          /> */}
+
           <OrderSummaryComponent
             totalPrice={totalPrice}
             totalPDV={totalPDV}

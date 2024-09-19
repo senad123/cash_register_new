@@ -6,14 +6,17 @@ import Order from "./Order";
 
 function ListAllOrders() {
   const listOfAllOrders = useOrderStore((state) => state.orders);
-  const [editingOrderId, setEditingOrderId] = useState(null);
+
+  const editingOrderId = useOrderStore((state) => state.editingOrderId);
+  const setEditingOrderId = useOrderStore((state) => state.setEditingOrderId);
+  const stopEditing = useOrderStore((state) => state.stopEditing);
+
+  //const [editingOrderId, setEditingOrderId] = useState(null);
   const [selectedOrderId, setSelectedOrderId] = useState(null); // Track selected order
 
-  const stopEditing = () => {
-    setEditingOrderId(null);
-  };
-
-  console.log(listOfAllOrders);
+  // const stopEditing = () => {
+  //   setEditingOrderId(null);
+  // };
 
   const orderToEdit = listOfAllOrders.find(
     (order) => order?.orderId === editingOrderId,

@@ -6,8 +6,28 @@ const useOrderStore = create(
     (set, get) => ({
       // state
       orders: [],
-      tip: 0, // Add tip to the global state
-      // actions
+      tip: 0,
+      editingOrderId: null,
+      orderItems: [],
+      quantity: 1,
+
+      setOrderItems: (items) => set({ orderItems: items }), // Action to set order items
+
+      updateItemQuantity: (index, quantity) => {
+        set((state) => {
+          const updatedItems = [...state.orderItems];
+          updatedItems[index] = {
+            ...updatedItems[index],
+            quantity,
+            //  totalPrice: quantity * updatedItems[index].unitPrice,
+          };
+          return {
+            orderItems: updatedItems,
+          };
+        });
+      },
+
+      // actions for Orders
       createNewOrder: (newOrder) => {
         set((state) => ({
           orders: [...state.orders, newOrder],
@@ -25,57 +45,20 @@ const useOrderStore = create(
           orders: state.orders.filter((order) => order.orderId !== id),
         }));
       },
-      // Increment the quantity of a specific item in an order
-      incrementQuantity: (orderId, itemId) => {
-        set((state) => ({
-          orders: state.orders.map((order) => {
-            if (order.orderId === orderId) {
-              return {
-                ...order,
-                orderItems: order.orderItems.map((item) =>
-                  item.id === itemId
-                    ? {
-                        ...item,
-                        quantity: item.quantity + 1,
-                        totalPrice: (item.quantity + 1) * item.unitPrice,
-                      }
-                    : item,
-                ),
-              };
-            }
-            return order;
-          }),
-        }));
+      //Editing orders
+      setEditingOrderId: (orderId) => {
+        set({ editingOrderId: orderId });
       },
-      // Decrement the quantity of a specific item in an order
-      decrementQuantity: (orderId, itemId) => {
-        set((state) => ({
-          orders: state.orders.map((order) => {
-            if (order.orderId === orderId) {
-              return {
-                ...order,
-                orderItems: order.orderItems
-                  .map((item) => {
-                    if (item.id === itemId) {
-                      const newQuantity = item.quantity - 1;
-                      if (newQuantity === 0) {
-                        return null; // Automatically remove item if quantity reaches 0
-                      }
-                      return {
-                        ...item,
-                        quantity: newQuantity,
-                        totalPrice: newQuantity * item.unitPrice,
-                      };
-                    }
-                    return item;
-                  })
-                  .filter(Boolean), // Remove null items
-              };
-            }
-            return order;
-          }),
-        }));
+
+      stopEditing: () => {
+        set({ editingOrderId: null });
       },
+
+      // Actions for items
+      //   setOrderItems: (items) => set({ orderItems: items }), // Updates global order items
+
+      clearOrderItems: () => set({ orderItems: [] }),
+
       clearOrders: () => set({ orders: [] }),
       setTip: (tip) => set({ tip }), // Action to update the tip
       setQuantity: (quantity) => set({ quantity }),

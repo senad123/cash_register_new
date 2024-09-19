@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
-// File path: src/components/SearchComponent.js
 import { useEffect } from "react";
 import UpdateQuantity from "./UpdateQuantity";
 import styles from "./SearchComponent.module.css";
-import useSearchStore from "../globalState/useSearchStore"; // Import the search store
+import useSearchStore from "../globalState/searchStore"; // Import the search store
 
 function SearchComponent({
   items,
@@ -31,6 +30,14 @@ function SearchComponent({
     filterItems(items, orderItems); // Ensure items are filtered when the component renders
   }, [items, orderItems, filterItems]);
 
+  // Updated handleAddItem to reset the search input after adding an item
+  const handleAddItemAndReset = () => {
+    handleAddItem(); // Add the item to the order
+    setSearchTerm(""); // Reset the search input after item is added
+    setSelectedItem(null); // Reset the selection
+    setShowQuantityInput(false); // Hide the quantity input
+  };
+
   return (
     <div>
       <h3>Add Article</h3>
@@ -46,7 +53,7 @@ function SearchComponent({
         <div className={styles.filteredItems}>
           {filteredItems.length > 0 ? (
             filteredItems.map((item) => {
-              const isDisabled = orderItems.some(
+              const isDisabled = orderItems?.some(
                 (orderItem) => orderItem.id === item.id,
               );
               return (
@@ -92,7 +99,7 @@ function SearchComponent({
           </button>
           <button
             type="button"
-            onClick={handleAddItem} // Add the item to the order
+            onClick={handleAddItemAndReset} // Updated to handle reset after adding item
             className={styles.button}
           >
             Add Item

@@ -56,7 +56,7 @@
 /* Selected item */
 
 button {
-  background: none;
+  background: #cccc;
   border: none;
   cursor: pointer;
 }

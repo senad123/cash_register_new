@@ -2,33 +2,57 @@
 /* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
 import useItemStore from "../../globalState/itemStore";
+import { useEffect } from "react";
 
-function CreateNewItem({ setItemList }) {
-  const items = useItemStore((state) => state.items);
+function CreateNewItem({ item = null, setShow }) {
   const addNewItem = useItemStore((state) => state.addNewItem);
   const updateItem = useItemStore((state) => state.updateItem);
 
-  console.log(items);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
+    setValue,
   } = useForm();
 
+  // Pre-fill form if we are editing an existing item
+  useEffect(() => {
+    if (item) {
+      setValue("itemName", item.itemName);
+      setValue("unitPrice", item.unitPrice);
+      setValue("type", item.type);
+    }
+  }, [item, setValue]);
+
   function onSubmit(data) {
-    const ranNum = Math.floor(Math.random() * 1000);
-    const random = ranNum + "";
+    if (item) {
+      // Editing existing item
+      const updatedItem = {
+        ...item,
+        itemName: data.itemName,
+        unitPrice: data.unitPrice,
+        type: data.type,
+      };
+      updateItem(updatedItem); // Pass the updated item directly to updateItem
+    } else {
+      // Creating a new item
+      const ranNum = Math.floor(Math.random() * 1000);
+      const random = ranNum + "";
 
-    const newItem = {
-      id: random,
-      itemName: data.itemName,
-      unitPrice: data.unitPrice,
-      type: data.type,
-    };
-    console.log(newItem);
+      const newItem = {
+        id: random,
+        itemName: data.itemName,
+        unitPrice: data.unitPrice,
+        type: data.type,
+      };
+      addNewItem(newItem); // Add the new item
+    }
 
-    addNewItem(newItem);
+    reset(); // Reset the form fields after submission
+    setShow(false); // Close the form after adding or updating the item
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
@@ -48,7 +72,7 @@ function CreateNewItem({ setItemList }) {
 
       {errors.exampleRequired && <span>This field is required</span>}
 
-      <button type="submit">AddItem</button>
+      <button type="submit">{item ? "Update Item" : "Add Item"}</button>
     </form>
   );
 }
