@@ -8,8 +8,8 @@ function SelectedItemsComponent({
   handleQuantityChange,
   //handleRemoveItem,
 }) {
-  const orderItems = useOrderStore((state) => state.orderItems);
   const removeItem = useOrderStore((state) => state.removeItem);
+  const orderItems = useOrderStore((state) => state.orderItems);
 
   const handleRemoveItem = (index) => {
     removeItem(index);
@@ -33,7 +33,7 @@ function SelectedItemsComponent({
                   }
                   className={styles.quantityInput}
                 />
-                - {item.unitPrice}€ - {item.quantity * item.unitPrice}€
+                - {item.unitPrice}€ - {item.quantity * item.unitPrice}
                 <button
                   type="button"
                   onClick={() => handleRemoveItem(index)}

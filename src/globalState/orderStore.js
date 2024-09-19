@@ -11,6 +11,9 @@ const useOrderStore = create(
       orderItems: [],
       quantity: 1,
       selectedItem: null,
+      selectedQuantity: 1,
+
+      setSelectedQuantity: (quantity) => set({ selectedQuantity: quantity }),
 
       setSelectedItem: (item) => set({ selectedItem: item }),
 

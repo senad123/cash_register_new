@@ -6,15 +6,21 @@ import useSearchStore from "../globalState/searchStore"; // Import the search st
 import useItemStore from "../globalState/itemStore";
 import useOrderStore from "../globalState/orderStore";
 
-function SearchComponent({
-  handleAddItem,
+function FilterComponent({
   showQuantityInput,
   setShowQuantityInput,
-  selectedQuantity,
-  setSelectedQuantity,
+  // selectedQuantity,
+  // setSelectedQuantity,
 }) {
   const selectedItem = useOrderStore((state) => state.selectedItem);
   const setSelectedItem = useOrderStore((state) => state.setSelectedItem);
+  const addItem = useOrderStore((state) => state.addItem);
+  const initializeItems = useSearchStore((state) => state.initializeItems);
+
+  const selectedQuantity = useOrderStore((state) => state.selectedQuantity); // Global selectedQuantity
+  const setSelectedQuantity = useOrderStore(
+    (state) => state.setSelectedQuantity,
+  );
 
   //ItemStore
   const items = useItemStore((state) => state.items); // List of items
@@ -23,13 +29,27 @@ function SearchComponent({
     useSearchStore();
 
   const orderItems = useOrderStore((state) => state.orderItems); // Global order items
-  //const setOrderItems = useOrderStore((state) => state.setOrderItems); // Action to update items
 
   // Handle search input and update the search term state
   const handleSearch = (e) => {
     const searchValue = e.target.value.toLowerCase();
     setSearchTerm(searchValue); // Update search term in store
     filterItems(items, orderItems); // Filter items based on search term
+  };
+
+  const handleSelectItem = (item) => {
+    setSelectedItem(item);
+    setShowQuantityInput(true);
+  };
+
+  const handleAddItem = () => {
+    if (selectedItem) {
+      addItem({ ...selectedItem, quantity: selectedQuantity });
+      setSelectedItem(null);
+      setSelectedQuantity(1);
+      setShowQuantityInput(false);
+      initializeItems;
+    }
   };
 
   useEffect(() => {
@@ -42,11 +62,6 @@ function SearchComponent({
     setSearchTerm(""); // Reset the search input after item is added
     setSelectedItem(null); // Reset the selection
     setShowQuantityInput(false); // Hide the quantity input
-  };
-
-  const handleSelectItem = (item) => {
-    setSelectedItem(item);
-    setShowQuantityInput(true);
   };
 
   return (
@@ -121,4 +136,4 @@ function SearchComponent({
   );
 }
 
-export default SearchComponent;
+export default FilterComponent;

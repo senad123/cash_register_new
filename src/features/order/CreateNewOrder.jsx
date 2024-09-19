@@ -11,7 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import GenerateOrderId from "../helper/GenerateOrderId";
-import SearchComponent from "../../components/SearchComponent";
+import FilterComponent from "../../components/FilterComponent";
 import SelectedItemsComponent from "../../components/SelectedItemsComponent";
 import OrderSummaryComponent from "../../components/OrderSummaryComponent";
 
@@ -26,13 +26,14 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
 
   const orderItems = useOrderStore((state) => state.orderItems); // Global order items
   const setOrderItems = useOrderStore((state) => state.setOrderItems); // Action to update items
-  const addItem = useOrderStore((state) => state.addItem);
 
-  const selectedItem = useOrderStore((state) => state.selectedItem);
+  const selectedQuantity = useOrderStore((state) => state.selectedQuantity); // Global selectedQuantity
+  const setSelectedQuantity = useOrderStore(
+    (state) => state.setSelectedQuantity,
+  ); // Action to update selectedQuantity
+  //const [selectedQuantity, setSelectedQuantity] = useState(1);
+
   const setSelectedItem = useOrderStore((state) => state.setSelectedItem);
-
-  //SEARCH STORE
-  const initializeItems = useSearchStore((state) => state.initializeItems);
 
   // //ItemStore
   // const items = useItemStore((state) => state.items); // List of items
@@ -43,8 +44,6 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
   const [customerInfo, setCustomerInfo] = useState(
     orderToEdit?.customerInfo || "",
   );
-
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const totalPrice = orderItems.reduce(
     (total, item) => total + item.quantity * item.unitPrice,
@@ -82,7 +81,6 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
       const orderId = GenerateOrderId();
       createNewOrder({ ...orderData, orderId });
     }
-
     resetForm();
     if (onFormSubmit) {
       onFormSubmit();
@@ -97,26 +95,6 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
     setSelectedItem(null);
   };
 
-  const handleAddItem = () => {
-    if (selectedItem) {
-      addItem({ ...selectedItem, quantity: selectedQuantity });
-
-      // setOrderItems([
-      //   ...orderItems,
-      //   { ...selectedItem, quantity: selectedQuantity },
-      // ]);
-      setSelectedItem(null);
-      setSelectedQuantity(1);
-      setShowQuantityInput(false);
-      initializeItems;
-    }
-  };
-
-  const handleSelectItem = (item) => {
-    setSelectedItem(item);
-    setShowQuantityInput(true);
-  };
-
   const handleQuantityChange = (index, value) => {
     const updatedItems = [...orderItems];
     updatedItems[index].quantity = value;
@@ -127,9 +105,7 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
     <form onSubmit={handleSubmit}>
       <div className={styles.container}>
         <div className={styles.leftSection}>
-          <SearchComponent
-            handleSelectItem={handleSelectItem}
-            handleAddItem={handleAddItem}
+          <FilterComponent
             showQuantityInput={showQuantityInput}
             setShowQuantityInput={setShowQuantityInput}
             selectedQuantity={selectedQuantity}
