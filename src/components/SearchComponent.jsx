@@ -3,10 +3,11 @@ import { useEffect } from "react";
 import UpdateQuantity from "./UpdateQuantity";
 import styles from "./SearchComponent.module.css";
 import useSearchStore from "../globalState/searchStore"; // Import the search store
+import useItemStore from "../globalState/itemStore";
+import useOrderStore from "../globalState/orderStore";
 
 function SearchComponent({
-  items,
-  orderItems,
+  //orderItems,
   handleSelectItem,
   handleAddItem,
   showQuantityInput,
@@ -16,8 +17,14 @@ function SearchComponent({
   selectedQuantity,
   setSelectedQuantity,
 }) {
+  //ItemStore
+  const items = useItemStore((state) => state.items); // List of items
+  //SearchStore
   const { searchTerm, setSearchTerm, filterItems, filteredItems } =
     useSearchStore();
+
+  const orderItems = useOrderStore((state) => state.orderItems); // Global order items
+  //const setOrderItems = useOrderStore((state) => state.setOrderItems); // Action to update items
 
   // Handle search input and update the search term state
   const handleSearch = (e) => {

@@ -1,9 +1,14 @@
 /* eslint-disable react/prop-types */
 // File path: src/components/OrderSummaryComponent.js
 
+import useOrderStore from "../globalState/orderStore";
 import styles from "./OrderSummaryComponent.module.css";
 
-function OrderSummaryComponent({ totalPrice, totalPDV, tip, setTip }) {
+function OrderSummaryComponent({ totalPrice, totalPDV }) {
+  //Tip
+  const tip = useOrderStore((state) => state.tip);
+  const setTip = useOrderStore((state) => state.setTip);
+
   return (
     <div className={styles.totalPrice}>
       <p>Total Price: {totalPrice.toFixed(2)}€</p>

@@ -13,13 +13,24 @@ const useOrderStore = create(
 
       setOrderItems: (items) => set({ orderItems: items }), // Action to set order items
 
+      addItem: (item) =>
+        set((state) => ({
+          orderItems: [...state.orderItems, item], // Append an item to orderItems
+        })),
+
+      removeItem: (index) =>
+        set((state) => {
+          const updatedItems = [...state.orderItems];
+          updatedItems.splice(index, 1); // Remove item by index
+          return { orderItems: updatedItems };
+        }),
+
       updateItemQuantity: (index, quantity) => {
         set((state) => {
           const updatedItems = [...state.orderItems];
           updatedItems[index] = {
             ...updatedItems[index],
             quantity,
-            //  totalPrice: quantity * updatedItems[index].unitPrice,
           };
           return {
             orderItems: updatedItems,

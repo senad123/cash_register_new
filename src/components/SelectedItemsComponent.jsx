@@ -1,13 +1,20 @@
 /* eslint-disable react/prop-types */
 // File path: src/components/SelectedItemsComponent.js
 
+import useOrderStore from "../globalState/orderStore";
 import styles from "./SelectedItemsComponent.module.css";
 
 function SelectedItemsComponent({
-  orderItems,
   handleQuantityChange,
-  handleRemoveItem,
+  //handleRemoveItem,
 }) {
+  const orderItems = useOrderStore((state) => state.orderItems);
+  const removeItem = useOrderStore((state) => state.removeItem);
+
+  const handleRemoveItem = (index) => {
+    removeItem(index);
+  };
+
   return (
     <div>
       <h3>Selected Items</h3>

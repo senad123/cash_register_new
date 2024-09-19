@@ -32,7 +32,8 @@ function ListAllOrders() {
       setEditingOrderId(null); // Close any open edit form
     }
   };
-
+  if (listOfAllOrders.length === 0) return <div>no stored orders</div>;
+  console.log(listOfAllOrders);
   return (
     <div>
       <div className={styles.grid}>

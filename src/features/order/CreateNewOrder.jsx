@@ -18,26 +18,26 @@ import OrderSummaryComponent from "../../components/OrderSummaryComponent";
 import styles from "./CreateNewOrder.module.css";
 
 function CreateNewOrder({ orderToEdit, onFormSubmit }) {
+  //OrderStore
   const createNewOrder = useOrderStore((state) => state.createNewOrder);
   const updateOrder = useOrderStore((state) => state.updateOrder);
   const tip = useOrderStore((state) => state.tip);
   const setTip = useOrderStore((state) => state.setTip);
 
-  //OrderStore
-  // const orderItems = useOrderStore((state) => state.orderItems); // Global order items
-  // const setOrderItems = useOrderStore((state) => state.setOrderItems); // Action to update items
-
-  //ItemStore
-  const items = useItemStore((state) => state.items); // List of items
+  const orderItems = useOrderStore((state) => state.orderItems); // Global order items
+  const setOrderItems = useOrderStore((state) => state.setOrderItems); // Action to update items
+  const addItem = useOrderStore((state) => state.addItem);
 
   //SEARCH STORE
   const initializeItems = useSearchStore((state) => state.initializeItems);
-  // const { initializeItems } = useSearchStore(); // Initialize the search store
+
+  // //ItemStore
+  // const items = useItemStore((state) => state.items); // List of items
 
   const [showQuantityInput, setShowQuantityInput] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
 
-  const [orderItems, setOrderItems] = useState(orderToEdit?.orderItems || []);
+  //const [orderItems, setOrderItems] = useState(orderToEdit?.orderItems || []);
   const [customerInfo, setCustomerInfo] = useState(
     orderToEdit?.customerInfo || "",
   );
@@ -52,17 +52,17 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
 
   useEffect(() => {
     if (orderToEdit) {
-      setOrderItems(orderToEdit.orderItems || []);
+      setOrderItems(orderToEdit.orderItems || []); // Update global order items
       setCustomerInfo(orderToEdit.customerInfo || "");
       setTip(orderToEdit.tip || 0);
       setStartDate(new Date(orderToEdit.startDate || new Date()));
     }
   }, [orderToEdit, setTip, setOrderItems]);
 
-  // Initialize items in the search store when the component mounts
-  useEffect(() => {
-    initializeItems(items);
-  }, [items, initializeItems]);
+  // // Initialize items in the search store when the component mounts
+  // useEffect(() => {
+  //   initializeItems(items);
+  // }, [items, initializeItems]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -97,10 +97,12 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
 
   const handleAddItem = () => {
     if (selectedItem) {
-      setOrderItems([
-        ...orderItems,
-        { ...selectedItem, quantity: selectedQuantity },
-      ]);
+      addItem({ ...selectedItem, quantity: selectedQuantity });
+
+      // setOrderItems([
+      //   ...orderItems,
+      //   { ...selectedItem, quantity: selectedQuantity },
+      // ]);
       setSelectedItem(null);
       setSelectedQuantity(1);
       setShowQuantityInput(false);
@@ -119,19 +121,11 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
     setOrderItems(updatedItems);
   };
 
-  const handleRemoveItem = (index) => {
-    const updatedItems = [...orderItems];
-    updatedItems.splice(index, 1);
-    setOrderItems(updatedItems);
-  };
-
   return (
     <form onSubmit={handleSubmit}>
       <div className={styles.container}>
         <div className={styles.leftSection}>
           <SearchComponent
-            items={items}
-            orderItems={orderItems}
             handleSelectItem={handleSelectItem}
             handleAddItem={handleAddItem}
             showQuantityInput={showQuantityInput}
@@ -159,15 +153,7 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
               onChange={(date) => setStartDate(date)}
             />
           </div>
-          <SelectedItemsComponent
-            orderItems={orderItems}
-            handleQuantityChange={handleQuantityChange}
-            handleRemoveItem={handleRemoveItem}
-          />
-          {/* <SelectedItemsComponent
-            orderItems={orderItems}
-            setOrderItems={setOrderItems}
-          /> */}
+          <SelectedItemsComponent handleQuantityChange={handleQuantityChange} />
 
           <OrderSummaryComponent
             totalPrice={totalPrice}
