@@ -28,6 +28,9 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
   const setOrderItems = useOrderStore((state) => state.setOrderItems); // Action to update items
   const addItem = useOrderStore((state) => state.addItem);
 
+  const selectedItem = useOrderStore((state) => state.selectedItem);
+  const setSelectedItem = useOrderStore((state) => state.setSelectedItem);
+
   //SEARCH STORE
   const initializeItems = useSearchStore((state) => state.initializeItems);
 
@@ -37,11 +40,10 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
   const [showQuantityInput, setShowQuantityInput] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
 
-  //const [orderItems, setOrderItems] = useState(orderToEdit?.orderItems || []);
   const [customerInfo, setCustomerInfo] = useState(
     orderToEdit?.customerInfo || "",
   );
-  const [selectedItem, setSelectedItem] = useState(null);
+
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const totalPrice = orderItems.reduce(
@@ -129,8 +131,6 @@ function CreateNewOrder({ orderToEdit, onFormSubmit }) {
             handleSelectItem={handleSelectItem}
             handleAddItem={handleAddItem}
             showQuantityInput={showQuantityInput}
-            selectedItem={selectedItem}
-            setSelectedItem={setSelectedItem}
             setShowQuantityInput={setShowQuantityInput}
             selectedQuantity={selectedQuantity}
             setSelectedQuantity={setSelectedQuantity}

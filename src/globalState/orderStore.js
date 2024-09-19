@@ -10,6 +10,9 @@ const useOrderStore = create(
       editingOrderId: null,
       orderItems: [],
       quantity: 1,
+      selectedItem: null,
+
+      setSelectedItem: (item) => set({ selectedItem: item }),
 
       setOrderItems: (items) => set({ orderItems: items }), // Action to set order items
 
@@ -73,6 +76,7 @@ const useOrderStore = create(
       clearOrders: () => set({ orders: [] }),
       setTip: (tip) => set({ tip }), // Action to update the tip
       setQuantity: (quantity) => set({ quantity }),
+
       // Selectors (computed values)
       getTotalOrderCount: () => {
         const orders = get().orders;

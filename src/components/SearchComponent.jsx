@@ -7,16 +7,15 @@ import useItemStore from "../globalState/itemStore";
 import useOrderStore from "../globalState/orderStore";
 
 function SearchComponent({
-  //orderItems,
-  handleSelectItem,
   handleAddItem,
   showQuantityInput,
-  selectedItem,
-  setSelectedItem,
   setShowQuantityInput,
   selectedQuantity,
   setSelectedQuantity,
 }) {
+  const selectedItem = useOrderStore((state) => state.selectedItem);
+  const setSelectedItem = useOrderStore((state) => state.setSelectedItem);
+
   //ItemStore
   const items = useItemStore((state) => state.items); // List of items
   //SearchStore
@@ -43,6 +42,11 @@ function SearchComponent({
     setSearchTerm(""); // Reset the search input after item is added
     setSelectedItem(null); // Reset the selection
     setShowQuantityInput(false); // Hide the quantity input
+  };
+
+  const handleSelectItem = (item) => {
+    setSelectedItem(item);
+    setShowQuantityInput(true);
   };
 
   return (
